@@ -2,4 +2,11 @@ from utilitaires import *
 
 api = get_API()
 
-save_list(api, 'AssembleeNat', 'les-deputes', 'data.csv')
+
+
+def main():
+    save_list(api, 'AssembleeNat', 'les-deputes', 'data.csv')
+
+
+if __name__ == '__main__':
+    main()
