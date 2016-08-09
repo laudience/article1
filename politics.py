@@ -11,26 +11,31 @@ class PoliticsRelations:
 
     def import_data_from_csv(self):
         with open('data.csv', 'r', encoding='utf8') as csvfile:
-            reader = csv.reader(csvfile, delimiter=';')
+            reader = csv.DictReader(csvfile,delimiter=';')
+            self.deputies_dict = {}
             for row in reader:
-                self.deputies_dict[row[1]]=dict() # importe les relations id_str -> screen_name pour eviter d'avoir à relire le csv à chaque fois
-                self.deputies_dict[row[1]]=row[0]
-                self.relations_dict[row[1]]=dict()
+                # importe les relations id_str -> screen_name pour eviter d'avoir à relire le csv à chaque fois
+                self.deputies_dict[row['id']] = row['user_name']
+                self.relations_dict[row['id']]=dict()
                 for row2 in reader:
-                    self.relations_dict[row[1]][row2[1]]=dict() # On utilise les idr_str comme index
-                    self.relations_dict[row[1]][row2[1]]['retweets']=0
-                    self.relations_dict[row[1]][row2[1]]['mentions']=0 # relations_dict[depute1][depute2]=nombre de retweet du depute2 fait par le depute1
-        print("Deputies datas in dictionnary")
+                    self.relations_dict[row['id']][row2['id']]=dict() # On utilise les idr_str comme index
+                    self.relations_dict[row['id']][row2['id']]['retweets']=0
+                    self.relations_dict[row['id']][row2['id']]['mentions']=0 # relations_dict[depute1][depute2]=nombre de retweet du depute2 fait par le depute1
+                
+                print("Deputies datas in dictionnary")
 
     def mentions_and_retweets(self, writing=False):
+        print("mentions_and_retweets");
         self.import_data_from_csv()
         mentions_couple=[]
         retweet_couple=[]
         deputy_count=0
         tweet_count=0
-        for deputy in self.relations_dict:
-            while tweet_count < 30: # Pour le dev
-                for tweet in tweepy.Cursor(self.api.user_timeline, id=self.relations_dict[deputy]).items(2):
+        for deputy in self.deputies_dict:
+            print(deputy)
+            while tweet_count < 50: # Pour le dev
+                for tweet in tweepy.Cursor(self.api.user_timeline, id=deputy).items(2):
+#                    print(tweet)
                     if 'retweeted_status' in dir(tweet):
                         retweet_couple.append((deputy, tweet.retweeted_status.user.id_str, tweet.created_at.date(),tweet.id))
                         if tweet.retweeted_status.user.id_str in self.relations_dict:
