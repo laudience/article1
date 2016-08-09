@@ -19,3 +19,11 @@ def save_list(api, usr_str, list_name, filename):
         for member in tweepy.Cursor(api.list_members, usr.screen_name, list_name).items():
             writer.writerow({'user_name' : member.name , 'id' : member.id_str})
     print("data imported, csv writed")
+
+def import_data_from_csv(filename):
+    data={}
+    with open(filename, 'r') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=";")
+        for row in reader:
+            data[row['id']] = row['user_name']
+    return data
