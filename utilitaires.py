@@ -46,7 +46,8 @@ def init_graph(filename):
             
             with open(filename, 'r') as snd_file:
                 snd_reader = csv.DictReader(snd_file, delimiter=";")
+                graph[row_fst_r['id']] = dict()
                 
                 for row_snd_r in snd_reader:
-                    graph[row_fst_r['id']] = {"id": row_snd_r['id'], "retweets": 0, "mentions": 0}
+                    graph[row_fst_r['id']][row_snd_r['id']] = { "retweets": 0, "mentions": 0 }
     return graph
