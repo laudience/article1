@@ -9,25 +9,8 @@ class PoliticsRelations:
         self.deputies_dict=import_data('data.csv')
         self.relations_dict=init_graph('data.csv')
 
-    def import_data_from_csv(self): # depracated
-        with open('data.csv','r') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=";")
-            self.deputies_dict = {}
-            for row in reader:
-                print(row['id'], row['user_name'])
-                # importe les relations id_str -> screen_name pour eviter d'avoir à relire le csv à chaque fois
-                self.deputies_dict[row['id']] = row['user_name']
-                self.relations_dict[row['id']]=dict()
-                for row2 in reader:
-                    self.relations_dict[row['id']][row2['id']]=dict() # On utilise les idr_str comme index
-                    self.relations_dict[row['id']][row2['id']]['retweets']=0
-                    self.relations_dict[row['id']][row2['id']]['mentions']=0 # relations_dict[depute1][depute2]=nombre de retweet du depute2 fait par le depute1
-                
-        print("Deputies datas in dictionnary")
-
     def mentions_and_retweets(self, writing=False):
         print("mentions_and_retweets");
-        #self.import_data_from_csv()
         mentions_couple=[]
         retweet_couple=[]
         tweet_count=0
