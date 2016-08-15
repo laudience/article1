@@ -1,5 +1,4 @@
 from utilitaires import *
-import csv
 import json
 
 
@@ -10,28 +9,31 @@ class PoliticsRelations:
         self.relations_dict=init_graph('data.csv')
 
     def mentions_and_retweets(self, writing=False):
-        print("mentions_and_retweets");
+        print("mentions_and_retweets")
         mentions_couple=[]
         retweet_couple=[]
         tweet_count=0
-        #print(self.api.list_timeline('AssembleeNat', 'les-deputes'))
-        for page in tweepy.Cursor(self.api.list_timeline, 'AssembleeNat', 'les-deputes',since_id=676170131362308097).pages(20):
-            for tweet in page:
-
-                #print(tweet.author.id_str)
+        deputy_count=0
+        for deputy in self.deputies_dict:
+            deputy_count+=1
+            print(deputy_count, self.deputies_dict[deputy], " : ", deputy)
+            for tweet in tweepy.Cursor(self.api.user_timeline, id=deputy).items(10):
                 if 'retweeted_status' in dir(tweet):
-                    retweet_couple.append((tweet.author.id_str, tweet.retweeted_status.user.id_str, tweet.created_at,tweet.id))
-                    if tweet.retweeted_status.user.id_str in self.relations_dict[tweet.author.id_str]:
-                        print("add retweet",self.deputies_dict[tweet.author.id_str],self.deputies_dict[tweet.retweeted_status.user.id_str],tweet.created_at.date(),tweet.id)
-                        self.relations_dict[tweet.author.id_str][tweet.retweeted_status.user.id_str]['retweets']+=1
+                    if tweet.retweeted_status.user.id_str in self.relations_dict[deputy]:
+                        print("add retweet")
+                        retweet_couple.append(
+                            (deputy, tweet.retweeted_status.user.id_str, tweet.created_at.date(), tweet.id))
+                        self.relations_dict[deputy][tweet.retweeted_status.user.id_str]['retweets'] += 1
                     else:
                         for mention in tweet.entities['user_mentions']:
-                            mentions_couple.append((tweet.author.id_str,mention['id_str'], tweet.created_at.date(),tweet.id))
-                            if tweet.retweeted_status.user.id_str in self.relations_dict[tweet.author.id_str]:
-                                print("add mentions",self.deputies_dict[tweet.author.id_str],self.deputies_dict[tweet.retweeted_status.user.id_str],tweet.created_at,tweet.id)
-                                self.relations_dict[tweet.author.id_str][tweet.retweeted_status.user.id_str]['mentions'] += 1
+                            if mention['id_str'] in self.relations_dict:
+                                print("add mentions")
+                                mentions_couple.append((deputy, mention['id_str'], tweet.created_at.date(), tweet.id))
+                                self.relations_dict[deputy][mention['id_str']]['mentions'] += 1
                 tweet_count+=1
-            #print(tweet_count)
+            print(tweet_count)
+
+
 
         print("\n Retweet :",len(retweet_couple), "\n Mentions :", len(mentions_couple),"\n")
 

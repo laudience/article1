@@ -22,7 +22,8 @@ def save_list(api, usr_str, list_name, filename):
 
         usr = api.get_user(usr_str)
         for member in tweepy.Cursor(api.list_members, usr.screen_name, list_name).items():
-            writer.writerow({'user_name' : member.name , 'id' : member.id_str})
+            if member.protected is False:
+                writer.writerow({'user_name' : member.name , 'id' : member.id_str})
     print("data imported, csv writed")
 
 #___import_data____________________________________________________
