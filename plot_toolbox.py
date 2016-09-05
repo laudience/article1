@@ -47,16 +47,16 @@ def network_plot(link_type):
         Ye += [layt[e[0]][1], layt[e[1]][1], None]
         Ze += [layt[e[0]][2], layt[e[1]][2], None]
 
-    trace1 = go.Scatter3d(x=Xe,
+    trace1 = go.Scatter(x=Xe,
                        y=Ye,
-                       z=Ze,
+                   #    z=Ze,
                        mode='lines',
                        line=go.Line(color='rgb(125,125,125)', width=1),
                        hoverinfo='none'
                        )
-    trace2 = go.Scatter3d(x=Xn,
+    trace2 = go.Scatter(x=Xn,
                        y=Yn,
-                       z=Zn,
+                  #     z=Zn,
                        mode='markers',
                        name='deputies',
                        marker=go.Marker(symbol='dot',
@@ -85,8 +85,8 @@ def network_plot(link_type):
 
 
 def main():
-    #network_plot(link_type='mentions')
-    clean_data(writing=True)
+    network_plot(link_type='retweets')
+    #clean_data(writing=True)
 
 if __name__ == '__main__':
     main()
