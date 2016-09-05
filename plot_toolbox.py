@@ -36,7 +36,7 @@ def network_plot(link_type):
     N=len(nodes)
     print(N)
     labels = [deputy_dict[nodes[i]] for i in range(N)]
-    layt = G.layout('kk',dim=2)
+    layt = G.layout('auto',dim=2)
     Xn = [layt[k][0] for k in range(N)]
     Yn = [layt[k][1] for k in range(N)]
  #   Zn = [layt[k][2] for k in range(N)]
