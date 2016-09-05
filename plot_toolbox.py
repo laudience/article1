@@ -24,7 +24,7 @@ def clean_data(writing):
 
 def network_plot(link_type):
     deputy_dict=import_data('data.csv')
-    with open('relations.json', 'r') as infile:
+    with open('relations 18-08-16.json', 'r') as infile:
         relations_data = json.load(infile)
     nodes = [deputy for deputy in deputy_dict]
     Edges = []
@@ -32,20 +32,22 @@ def network_plot(link_type):
         for deputy2 in relations_data[deputy1]:
             if relations_data[deputy1][deputy2][link_type] != 0:
                 Edges.append((nodes.index(deputy1), nodes.index(deputy2)))
-    G=ig.Graph(Edges, directed=False)
+    G=ig.Graph(Edges, directed=True)
     N=len(nodes)
+    print(N)
     labels = [deputy_dict[nodes[i]] for i in range(N)]
-    layt = G.layout('kk',dim=3)
+    layt = G.layout('kk',dim=2)
     Xn = [layt[k][0] for k in range(N)]
     Yn = [layt[k][1] for k in range(N)]
-    Zn = [layt[k][2] for k in range(N)]
+ #   Zn = [layt[k][2] for k in range(N)]
     Xe = []
     Ye = []
-    Ze = []
+ #   Ze = []
     for e in Edges:
+        print(e)
         Xe += [layt[e[0]][0], layt[e[1]][0], None]
         Ye += [layt[e[0]][1], layt[e[1]][1], None]
-        Ze += [layt[e[0]][2], layt[e[1]][2], None]
+ #       Ze += [layt[e[0]][2], layt[e[1]][2], None]
 
     trace1 = go.Scatter(x=Xe,
                        y=Ye,
