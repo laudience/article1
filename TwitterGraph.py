@@ -1,3 +1,6 @@
+import igraph as ig
+import plotly
+import plotly.graph_objs as go
 from utilitaires import *
 import json
 
@@ -85,69 +88,66 @@ class TwitterGraph:
 
     #___plotGraph_______________________________________________
     
-    def plot_graph(self):
-        deputy_dict=import_data('data.csv')
-        with open('relations 18-08-16.json', 'r') as infile:
-            relations_data = json.load(infile)
-            nodes = [deputy for deputy in deputy_dict]
-            Edges = []
-            for deputy1 in nodes:
-                for deputy2 in relations_data[deputy1]:
-                    if relations_data[deputy1][deputy2][link_type] != 0:
-                        Edges.append((nodes.index(deputy1), nodes.index(deputy2)))
-                        G=ig.Graph(Edges, directed=True)
-                        N=len(nodes)
-                        print(N)
-                        labels = [deputy_dict[nodes[i]] for i in range(N)]
-                        layt = G.layout('auto',dim=2)
-                        Xn = [layt[k][0] for k in range(N)]
-                        Yn = [layt[k][1] for k in range(N)]
+    def plot_graph(self, link_type):
+        Nodes = [deputy for deputy in self.nodes]
+        Edges = []
+        for deputy1 in Nodes:
+            for deputy2 in self.links[deputy1]:
+                if self.links[deputy1][deputy2][link_type] != 0:
+                    Edges.append((Nodes.index(deputy1), Nodes.index(deputy2)))
+                    G=ig.Graph(Edges, directed=True)
+                    N=len(Nodes)
+                    print(N)
+                    labels = [self.nodes[Nodes[i]] for i in range(N)]
+                    layt = G.layout('auto',dim=2)
+                    Xn = [layt[k][0] for k in range(N)]
+                    Yn = [layt[k][1] for k in range(N)]
+                    
+                    Xe = []
+                    Ye = []
+                    
+                    for e in Edges:
+                        print(e)
+                        Xe += [layt[e[0]][0], layt[e[1]][0], None]
+                        Ye += [layt[e[0]][1], layt[e[1]][1], None]
                         
-                        Xe = []
-                        Ye = []
                         
-                        for e in Edges:
-                            print(e)
-                            Xe += [layt[e[0]][0], layt[e[1]][0], None]
-                            Ye += [layt[e[0]][1], layt[e[1]][1], None]
-                            
-                            
-                            trace1 = go.Scatter(x=Xe,
-                                                y=Ye,
-                                                mode='lines',
-                                                line=go.Line(color='rgb(125,125,125)', width=1),
-                                                hoverinfo='none'
-                            )
-                            trace2 = go.Scatter(x=Xn,
-                                                y=Yn,
-                                                mode='markers',
-                                                name='deputies',
-                                                marker=go.Marker(symbol='dot',
-                                                                 size=6,
-                                                                 colorscale='Viridis',
-                                                                 line=go.Line(color='rgb(50,50,50)', width=0.5)
-                                                ),
-                                                text=labels,
-                                                hoverinfo='text'
-                            )
-                            axis = dict(showbackground=False,
-                                        showline=False,
-                                        zeroline=False,
-                                        showgrid=False,
-                                        showticklabels=False,
-                                        title='')
-                            layout = go.Layout(title="Test",
-                                               width=1000,
-                                               height=1000,
-                                               showlegend=False,
-                                               hovermode='closest')
-                            data = go.Data([trace1, trace2])
-                            fig = go.Figure(data=data, layout=layout)
-                            
-                            plotly.offline.plot(fig, filename=''.join([link_type,'-','relation.html']))
-                            
-                            
-                            
+                        trace1 = go.Scatter(x=Xe,
+                                            y=Ye,
+                                            mode='lines',
+                                            line=go.Line(color='rgb(125,125,125)', width=1),
+                                            hoverinfo='none'
+                        )
+                        trace2 = go.Scatter(x=Xn,
+                                            y=Yn,
+                                            mode='markers',
+                                            name='deputies',
+                                            marker=go.Marker(symbol='dot',
+                                                             size=6,
+                                                             colorscale='Viridis',
+                                                             line=go.Line(color='rgb(50,50,50)', width=0.5)
+                                            ),
+                                            text=labels,
+                                            hoverinfo='text'
+                        )
+                        axis = dict(showbackground=False,
+                                    showline=False,
+                                    zeroline=False,
+                                    showgrid=False,
+                                    showticklabels=False,
+                                    title='')
+                        layout = go.Layout(title="Test",
+                                           width=1000,
+                                           height=1000,
+                                           showlegend=False,
+                                           hovermode='closest')
+                        data = go.Data([trace1, trace2])
+                        fig = go.Figure(data=data, layout=layout)
+                        
+                        plotly.offline.plot(fig, filename=''.join([link_type,'-','relation.html']))
+                        
+                        
+                        
 def main():
     test  = TwitterGraph(get_API())
 
@@ -161,6 +161,6 @@ def main():
     test2 = TwitterGraph(get_API())
     test2.read_json(csv_file, json_file)
     test2.save_twitter_graph("test2.json")
-    
+    test2.plot_graph(link_type='retweets')
 if __name__ == '__main__':
     main()
