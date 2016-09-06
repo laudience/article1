@@ -11,36 +11,36 @@ class TwitterGraph:
 
     #___processTweet____________________________________________
     
-    def processTweet(self, tweet, source):
+    def process_tweet(self, tweet, source):
         if 'retweeted_status' in dir(tweet):
             target = tweet.retweeted_status.user.id_str
             if target in self.links[source]:
-                self.addRetweet(source, target)
+                self.add_retweet(source, target)
 
         for mention in tweet.entities['user_mentions']:
             target = mention['id_str']
             if target in self.links[source]:
-                self.addMention(source, target)
+                self.add_mention(source, target)
                 
     #___addRetweet______________________________________________
     
-    def addRetweet(self, source, target):
+    def add_retweet(self, source, target):
         self.links[source][target]['retweets'] += 1
 
     #___addMention______________________________________________
     
-    def addMention(self, source, target):
+    def add_mention(self, source, target):
         self.links[source][target]['mention'] +=1
 
     #___init_from_csv___________________________________________
 
     def init_from_csv(self, filename):
-        self.initNodes(filename)
+        self.init_nodes(filename)
         self.init_links(filename)
         
     #___initNodes_______________________________________________
     
-    def initNodes(self, filename):
+    def init_nodes(self, filename):
         with open(filename, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for row in reader:
@@ -63,22 +63,27 @@ class TwitterGraph:
     
     #___readJSON________________________________________________
     
-    def readJSON(filename): #seb
+    def read_json(self, csv_filename, json_filename): #seb
+        self.init_nodes(csv_filename)
+        with open(json_filename, 'r') as infile:
+            self.links = json.load(infile)
 
     #___constructGraph__________________________________________
     
-    def constructGraph(self):
+    def construct_graph(self):
         for node in self.nodes:
             for tweet in tweepy.Cursor(self.api.user_timeline, id=node).item(self.nbItems):
-                self.processTweet(tweet, node)
+                self.process_tweet(tweet, node)
 
     #___saveTwitterGraph________________________________________
                 
-    def saveTwitterGraph(str_name): #seb
+    def save_twitter_graph(self, outfile_name): #seb
+        with open(outfile_name, 'w') as outfile:
+            json.dump(self.links, outfile)
 
     #___plotGraph_______________________________________________
     
-    def plotGraph(self): # -----
+    def plot_graph(self): # -----
     
     
 def main():
