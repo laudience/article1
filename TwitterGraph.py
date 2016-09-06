@@ -83,15 +83,15 @@ class TwitterGraph:
 
     #___plotGraph_______________________________________________
     
-    def plot_graph(self): # -----
+#    def plot_graph(self): # -----
     
     
 def main():
-    test  = TwitterGraph()
+    test  = TwitterGraph(get_API())
 
     filename = "test.csv"
     test.init_from_csv(filename)
-
+    test.save_twitter_graph("test.json")
 
 
 if __name__ == '__main__':
