@@ -95,30 +95,30 @@ class TwitterGraph:
             for deputy2 in self.links[deputy1]:
                 if self.links[deputy1][deputy2][link_type] != 0:
                     Edges.append((Nodes.index(deputy1), Nodes.index(deputy2)))
-                    G=ig.Graph(Edges, directed=True)
-                    N=len(Nodes)
-                    print(N)
-                    labels = [self.nodes[Nodes[i]] for i in range(N)]
-                    layt = G.layout('auto',dim=2)
-                    Xn = [layt[k][0] for k in range(N)]
-                    Yn = [layt[k][1] for k in range(N)]
+        G=ig.Graph(Edges, directed=True)
+        N=len(Nodes)
+        print(N)
+        labels = [self.nodes[Nodes[i]] for i in range(N)]
+        layt = G.layout('auto',dim=2)
+        Xn = [layt[k][0] for k in range(N)]
+        Yn = [layt[k][1] for k in range(N)]
                     
-                    Xe = []
-                    Ye = []
+        Xe = []
+        Ye = []
                     
-                    for e in Edges:
-                        print(e)
-                        Xe += [layt[e[0]][0], layt[e[1]][0], None]
-                        Ye += [layt[e[0]][1], layt[e[1]][1], None]
+        for e in Edges:
+            print(e)
+            Xe += [layt[e[0]][0], layt[e[1]][0], None]
+            Ye += [layt[e[0]][1], layt[e[1]][1], None]
                         
                         
-                        trace1 = go.Scatter(x=Xe,
+            trace1 = go.Scatter(x=Xe,
                                             y=Ye,
                                             mode='lines',
                                             line=go.Line(color='rgb(125,125,125)', width=1),
                                             hoverinfo='none'
                         )
-                        trace2 = go.Scatter(x=Xn,
+            trace2 = go.Scatter(x=Xn,
                                             y=Yn,
                                             mode='markers',
                                             name='deputies',
@@ -130,31 +130,31 @@ class TwitterGraph:
                                             text=labels,
                                             hoverinfo='text'
                         )
-                        axis = dict(showbackground=False,
+            axis = dict(showbackground=False,
                                     showline=False,
                                     zeroline=False,
                                     showgrid=False,
                                     showticklabels=False,
                                     title='')
-                        layout = go.Layout(title="Test",
+            layout = go.Layout(title="Test",
                                            width=1000,
                                            height=1000,
                                            showlegend=False,
                                            hovermode='closest')
-                        data = go.Data([trace1, trace2])
-                        fig = go.Figure(data=data, layout=layout)
+            data = go.Data([trace1, trace2])
+            fig = go.Figure(data=data, layout=layout)
                         
-                        plotly.offline.plot(fig, filename=''.join([link_type,'-','relation.html']))
+            plotly.offline.plot(fig, filename=''.join([link_type,'-','relation.html']))
                         
                         
                         
 def main():
-    test  = TwitterGraph(get_API())
+    test = TwitterGraph(get_API())
 
     csv_file = "test.csv"
-    # test.init_from_csv(filename)
-    # test.construct_graph()
-    # test.save_twitter_graph("test.json")
+    test.init_from_csv(csv_file)
+    test.construct_graph()
+    test.save_twitter_graph("test.json")
 
     json_file = "test.json"
 
@@ -162,5 +162,6 @@ def main():
     test2.read_json(csv_file, json_file)
     test2.save_twitter_graph("test2.json")
     test2.plot_graph(link_type='retweets')
+
 if __name__ == '__main__':
     main()
