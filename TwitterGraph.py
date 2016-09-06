@@ -11,7 +11,7 @@ class TwitterGraph:
 
     #___processTweet____________________________________________
     
-    def processTweet(tweet, source): #seb
+    def processTweet(tweet, source):
         if 'retweeted_status' in dir(tweet):
             target = tweet.retweeted_status.user.id_str
             if target in self.links[source]:
@@ -23,7 +23,7 @@ class TwitterGraph:
                 addMention(source, target)
                 
     #___addRetweet______________________________________________
-        
+    
     def addRetweet(source, target):
         self.links[source][target]['retweets'] += 1
 
@@ -32,14 +32,35 @@ class TwitterGraph:
     def addMention(source, target): 
         self.links[source][target]['mention'] +=1
 
-    #___initNode________________________________________________
+    #___init_from_csv___________________________________________
+
+    def init_from_csv(self, filename):
+        initNodes(filename)
+        init_links(filename)
+        
+    #___initNodes_______________________________________________
     
-    def initNode(filename): 
+    def initNodes(filename): 
         with open(filename, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for row in reader:
                 self.nodes[row['id']] = row['user_name']
-                
+
+    #___initLinks_______________________________________________
+
+    def init_links(self, filename):
+        with open(filename, 'r') as fst_file:
+            fst_reader = csv.DictReader(fst_file, delimiter=";")
+        
+            for source in fst_reader:
+                with open(filename, 'r') as snd_file:
+                    snd_reader = csv.DictReader(snd_file, delimiter=";")
+                    self.links[source['id']] = dict()
+                    
+                    for target in snd_reader:
+                        self.links[source['id']][target['id']] = { "retweets": 0, "mentions": 0 }
+
+    
     #___readJSON________________________________________________
     
     def readJSON(filename): #seb
@@ -60,3 +81,13 @@ class TwitterGraph:
     def plotGraph(): # -----
     
     
+def main():
+    test  = TwitterGraph()
+
+    filename = "test.csv"
+    test.init_from_csv(filename)
+
+
+
+if __name__ == '__main__':
+    main()
