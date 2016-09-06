@@ -11,8 +11,17 @@ class TwitterGraph:
 
     #___processTweet____________________________________________
     
-    def processTweet(tweet): #seb
+    def processTweet(tweet, source): #seb
+        if 'retweeted_status' in dir(tweet):
+            target = tweet.retweeted_status.user.id_str
+            if target in self.links[source]:
+                addRetweet(source, target)
 
+        for mention in tweet.entities['user_mentions']:
+            target = mention['id_str']
+            if target in self.links[source]:
+                addMention(source, target)
+                
     #___addRetweet______________________________________________
         
     def addRetweet(source, target):
@@ -37,7 +46,7 @@ class TwitterGraph:
 
     #___constructGraph__________________________________________
     
-    def constructGraph(): #gui
+    def constructGraph(): 
         for node in self.nodes:
             for tweet in tweepy.Cursor(self.api.user_timeline, id=node).item(self.nbItems):
                 processTweet()
