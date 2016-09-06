@@ -11,36 +11,36 @@ class TwitterGraph:
 
     #___processTweet____________________________________________
     
-    def processTweet(tweet, source):
+    def processTweet(self, tweet, source):
         if 'retweeted_status' in dir(tweet):
             target = tweet.retweeted_status.user.id_str
             if target in self.links[source]:
-                addRetweet(source, target)
+                self.addRetweet(source, target)
 
         for mention in tweet.entities['user_mentions']:
             target = mention['id_str']
             if target in self.links[source]:
-                addMention(source, target)
+                self.addMention(source, target)
                 
     #___addRetweet______________________________________________
     
-    def addRetweet(source, target):
+    def addRetweet(self, source, target):
         self.links[source][target]['retweets'] += 1
 
     #___addMention______________________________________________
     
-    def addMention(source, target): 
+    def addMention(self, source, target):
         self.links[source][target]['mention'] +=1
 
     #___init_from_csv___________________________________________
 
     def init_from_csv(self, filename):
-        initNodes(filename)
-        init_links(filename)
+        self.initNodes(filename)
+        self.init_links(filename)
         
     #___initNodes_______________________________________________
     
-    def initNodes(filename): 
+    def initNodes(self, filename):
         with open(filename, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for row in reader:
@@ -67,10 +67,10 @@ class TwitterGraph:
 
     #___constructGraph__________________________________________
     
-    def constructGraph(): 
+    def constructGraph(self):
         for node in self.nodes:
             for tweet in tweepy.Cursor(self.api.user_timeline, id=node).item(self.nbItems):
-                processTweet()
+                self.processTweet(tweet, node)
 
     #___saveTwitterGraph________________________________________
                 
@@ -78,7 +78,7 @@ class TwitterGraph:
 
     #___plotGraph_______________________________________________
     
-    def plotGraph(): # -----
+    def plotGraph(self): # -----
     
     
 def main():
