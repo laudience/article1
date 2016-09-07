@@ -12,7 +12,7 @@ class TwitterGraph:
 
         self.nbItems = 100
 
-    #___processTweet____________________________________________
+    #___process_tweet____________________________________________
     
     def process_tweet(self, tweet, source):
         if 'retweeted_status' in dir(tweet):
@@ -27,12 +27,12 @@ class TwitterGraph:
                 print(tweet.created_at)
                 self.add_mention(source, target)
                 
-    #___addRetweet______________________________________________
+    #___add_retweet______________________________________________
     
     def add_retweet(self, source, target):
         self.links[source][target]['retweets'] += 1
 
-    #___addMention______________________________________________
+    #___add_mention______________________________________________
     
     def add_mention(self, source, target):
         self.links[source][target]['mentions'] +=1
@@ -43,7 +43,7 @@ class TwitterGraph:
         self.init_nodes(filename)
         self.init_links(filename)
         
-    #___initNodes_______________________________________________
+    #___init_nodes_______________________________________________
     
     def init_nodes(self, filename):
         with open(filename, 'r') as csvfile:
@@ -51,7 +51,7 @@ class TwitterGraph:
             for row in reader:
                 self.nodes[row['id']] = row['user_name']
 
-    #___initLinks_______________________________________________
+    #___init_links_______________________________________________
 
     def init_links(self, filename):
         with open(filename, 'r') as fst_file:
@@ -66,29 +66,29 @@ class TwitterGraph:
                         self.links[source['id']][target['id']] = { "retweets": 0, "mentions": 0 }
 
     
-    #___readJSON________________________________________________
+    #___read_json________________________________________________
     
     def read_json(self, csv_filename, json_filename): #seb
         self.init_nodes(csv_filename)
         with open(json_filename, 'r') as infile:
             self.links = json.load(infile)
 
-    #___constructGraph__________________________________________
+    #___construct_graph__________________________________________
     
     def construct_graph(self):
         for node in self.nodes:
             for tweet in tweepy.Cursor(self.api.user_timeline, id=node).items(self.nbItems):
                 self.process_tweet(tweet, node)
 
-    #___saveTwitterGraph________________________________________
+    #___save_twitter_graph________________________________________
                 
     def save_twitter_graph(self, outfile_name): #seb
         with open(outfile_name, 'w') as outfile:
             json.dump(self.links, outfile)
 
-    #___plotGraph_______________________________________________
+    #___plot_graph_______________________________________________
     
-    def plot_graph(self, link_type):
+    def plot_graph(self, link_type, html_filename):
         Nodes = [deputy for deputy in self.nodes]
         Edges = []
         for deputy1 in Nodes:
@@ -144,7 +144,7 @@ class TwitterGraph:
             data = go.Data([trace1, trace2])
             fig = go.Figure(data=data, layout=layout)
                         
-            plotly.offline.plot(fig, filename=''.join([link_type,'-','relation.html']))
+            plotly.offline.plot(fig, filename=''.join([html_filename,'.html']))
                         
                         
                         
@@ -161,7 +161,7 @@ def main():
     test2 = TwitterGraph(get_API())
     test2.read_json(csv_file, json_file)
     test2.save_twitter_graph("test2.json")
-    test2.plot_graph(link_type='retweets')
+    test2.plot_graph(link_type='retweets', html_filename='test4')
 
 if __name__ == '__main__':
     main()
