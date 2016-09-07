@@ -144,7 +144,7 @@ class TwitterGraph:
             data = go.Data([trace1, trace2])
             fig = go.Figure(data=data, layout=layout)
                         
-            plotly.offline.plot(fig, filename=''.join([html_filename,'.html']))
+            plotly.offline.plot(fig, filename=''.join(['./plot/',html_filename,'.html']))
                         
                         
                         
